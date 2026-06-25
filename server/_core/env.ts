@@ -7,6 +7,9 @@ export const ENV = {
   isProduction: process.env.NODE_ENV === "production",
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+  // Anthropic Claude API (replaces Forge for AI lead replies / follow-ups)
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? "",
+  anthropicModel: process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-6",
   stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
   // ServiceTitan
