@@ -1,211 +1,175 @@
+import DashboardLayout from "@/components/DashboardLayout";
+import { trpc } from "@/lib/trpc";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Building2, Save, Plus, X } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Settings as SettingsIcon, Save, Building } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Textarea } from "../components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
-import { Badge } from "../components/ui/badge";
-import { trpc } from "../lib/trpc";
 import { toast } from "sonner";
 
 export default function Settings() {
-  const [companyName, setCompanyName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [timezone, setTimezone] = useState("America/New_York");
-  const [serviceCategories, setServiceCategories] = useState<string[]>([]);
-  const [newCategory, setNewCategory] = useState("");
+  return (
+    <DashboardLayout>
+      <SettingsContent />
+    </DashboardLayout>
+  );
+}
 
-  const { data: business } = trpc.business.get.useQuery();
+function SettingsContent() {
+  const businessQuery = trpc.business.get.useQuery();
+  const business = businessQuery.data;
   const utils = trpc.useUtils();
 
-  const updateBusiness = trpc.business.update.useMutation({
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [timezone, setTimezone] = useState("America/New_York");
+  const [categories, setCategories] = useState<string[]>([]);
+  const [newCategory, setNewCategory] = useState("");
+
+  useEffect(() => {
+    if (business) {
+      setName(business.name || "");
+      setPhone(business.phone || "");
+      setEmail(business.email || "");
+      setAddress(business.address || "");
+      setTimezone(business.timezone || "America/New_York");
+      setCategories(business.serviceCategories || []);
+    }
+  }, [business]);
+
+  const createMutation = trpc.business.create.useMutation({
+    onSuccess: () => {
+      utils.business.get.invalidate();
+      toast.success("Business profile created!");
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const updateMutation = trpc.business.update.useMutation({
     onSuccess: () => {
       utils.business.get.invalidate();
       toast.success("Settings saved");
     },
+    onError: (err) => toast.error(err.message),
   });
-
-  const createBusiness = trpc.business.create.useMutation({
-    onSuccess: () => {
-      utils.business.get.invalidate();
-      toast.success("Business profile created");
-    },
-  });
-
-  useEffect(() => {
-    if (business) {
-      setCompanyName(business.companyName || "");
-      setEmail(business.email || "");
-      setPhone(business.phone || "");
-      setTimezone(business.timezone || "America/New_York");
-      setServiceCategories(business.serviceCategories || []);
-    }
-  }, [business]);
 
   const handleSave = () => {
-    const data = {
-      companyName,
-      email,
-      phone,
-      timezone,
-      serviceCategories,
-    };
-
     if (business) {
-      updateBusiness.mutate(data);
+      updateMutation.mutate({
+        id: business.id,
+        name, phone, email, address, timezone,
+        serviceCategories: categories,
+      });
     } else {
-      createBusiness.mutate(data);
+      createMutation.mutate({
+        name, phone, email, address, timezone,
+        serviceCategories: categories,
+      });
     }
   };
 
   const addCategory = () => {
-    if (newCategory.trim() && !serviceCategories.includes(newCategory.trim())) {
-      setServiceCategories([...serviceCategories, newCategory.trim()]);
+    if (newCategory.trim() && !categories.includes(newCategory.trim())) {
+      setCategories([...categories, newCategory.trim()]);
       setNewCategory("");
     }
   };
 
-  const removeCategory = (cat: string) => {
-    setServiceCategories(serviceCategories.filter((c) => c !== cat));
-  };
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold font-display">Settings</h1>
-          <p className="text-muted-foreground">
-            Configure your business profile and preferences.
-          </p>
-        </div>
-        <Button onClick={handleSave} disabled={updateBusiness.isPending} className="gap-2">
-          <Save className="h-4 w-4" />
-          Save Changes
-        </Button>
+    <div className="space-y-6 max-w-2xl">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>
+          Business Settings
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          Configure your business profile and preferences.
+        </p>
       </div>
 
-      {/* Business Profile */}
-      <Card>
+      <Card className="card-premium">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Building className="h-5 w-5" />
+            <Building2 className="h-5 w-5 text-primary" />
             Business Profile
           </CardTitle>
           <CardDescription>
-            {business
-              ? "Update your business information."
-              : "Let's set up your business profile so your AI assistant can start responding to leads."}
+            This information is used by the AI to respond to customer inquiries.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <Label>Company Name</Label>
-              <Input
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                placeholder="ABC Plumbing & HVAC"
-              />
-            </div>
-            <div>
-              <Label>Email</Label>
-              <Input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="info@abcplumbing.com"
-                type="email"
-              />
-            </div>
-            <div>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label>Business Name</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="ABC Plumbing & HVAC" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
               <Label>Phone</Label>
-              <Input
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="(555) 123-4567"
-              />
+              <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(555) 123-4567" />
             </div>
-            <div>
-              <Label>Timezone</Label>
-              <Select value={timezone} onValueChange={setTimezone}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="America/New_York">Eastern Time</SelectItem>
-                  <SelectItem value="America/Chicago">Central Time</SelectItem>
-                  <SelectItem value="America/Denver">Mountain Time</SelectItem>
-                  <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
-                  <SelectItem value="America/Phoenix">Arizona Time</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="info@abcplumbing.com" />
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Service Categories */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Service Categories</CardTitle>
-          <CardDescription>
-            Add the types of services your business offers (e.g., HVAC, Plumbing, Electrical).
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {serviceCategories.length > 0 && (
+          <div className="space-y-2">
+            <Label>Address</Label>
+            <Textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="123 Main St, Anytown, USA" rows={2} />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Timezone</Label>
+            <Input value={timezone} onChange={(e) => setTimezone(e.target.value)} placeholder="America/New_York" />
+          </div>
+
+          <Separator />
+
+          <div className="space-y-3">
+            <Label>Service Categories</Label>
+            <p className="text-xs text-muted-foreground">
+              Add the types of services your business offers (e.g., HVAC, Plumbing, Electrical).
+            </p>
             <div className="flex flex-wrap gap-2">
-              {serviceCategories.map((cat) => (
-                <Badge key={cat} variant="secondary" className="gap-1 px-3 py-1">
+              {categories.map((cat) => (
+                <Badge key={cat} variant="secondary" className="px-3 py-1 text-sm">
                   {cat}
                   <button
-                    onClick={() => removeCategory(cat)}
-                    className="ml-1 hover:text-destructive"
+                    onClick={() => setCategories(categories.filter((c) => c !== cat))}
+                    className="ml-2 hover:text-destructive"
                   >
-                    ×
+                    <X className="h-3 w-3" />
                   </button>
                 </Badge>
               ))}
             </div>
-          )}
-          <div className="flex gap-2">
-            <Input
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-              placeholder="Add a service category..."
-              onKeyDown={(e) => e.key === "Enter" && addCategory()}
-            />
-            <Button variant="outline" onClick={addCategory}>
-              Add
-            </Button>
+            <div className="flex gap-2">
+              <Input
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder="Add a service category"
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCategory(); } }}
+              />
+              <Button variant="outline" size="icon" onClick={addCategory}>
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Business Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Business Settings</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            {business
-              ? "Your business profile is configured. Update settings above as needed."
-              : "Set up your business profile first."}
-          </p>
-          {!business && (
-            <Button className="mt-4" onClick={handleSave}>
-              Create Business Profile
-            </Button>
-          )}
+          <Button
+            onClick={handleSave}
+            disabled={!name || createMutation.isPending || updateMutation.isPending}
+            className="w-full"
+          >
+            <Save className="h-4 w-4 mr-2" />
+            {createMutation.isPending || updateMutation.isPending ? "Saving..." : business ? "Save Changes" : "Create Business Profile"}
+          </Button>
         </CardContent>
       </Card>
     </div>

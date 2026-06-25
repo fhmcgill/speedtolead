@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1777143126808,
+      "tag": "0000_blue_wild_child",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1777148650265,
+      "tag": "0001_curved_dark_phoenix",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1777150276096,
+      "tag": "0002_numerous_green_goblin",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1777750951828,
+      "tag": "0003_dashing_gertrude_yorkes",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1777842415415,
+      "tag": "0004_previous_silverclaw",
+      "breakpoints": true
+    }
+  ]
+}
