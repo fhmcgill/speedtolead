@@ -36,6 +36,13 @@
       "when": 1777842415415,
       "tag": "0004_previous_silverclaw",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1782485957954,
+      "tag": "0005_brave_wrecker",
+      "breakpoints": true
     }
   ]
 }

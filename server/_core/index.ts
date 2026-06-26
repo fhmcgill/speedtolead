@@ -11,6 +11,7 @@ import { serveStatic, setupVite } from "./vite";
 import { registerWebhookRoutes } from "../webhooks";
 import { registerStripeRoutes } from "../stripe-handler";
 import { registerPlivoInboundRoute } from "../plivoInbound";
+import { registerGoogleLsaCronRoute } from "../googleLsaCron";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -46,6 +47,7 @@ async function startServer() {
   registerWebhookRoutes(app);
   registerStripeRoutes(app);
   registerPlivoInboundRoute(app);
+  registerGoogleLsaCronRoute(app);
   // tRPC API
   app.use(
     "/api/trpc",

@@ -10,6 +10,19 @@ export const ENV = {
   // Anthropic Claude API (replaces Forge for AI lead replies / follow-ups)
   anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? "",
   anthropicModel: process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-6",
+  // Google Ads API (Local Services Ads lead sync + reply)
+  // These four are global -- one HammerApp-owned manager account (MCC) and
+  // developer token serve every connected client business. Per-business
+  // identifiers (the client's own Google Ads customer ID, and the OAuth
+  // refresh token granting access to it) live in lead_sources.config instead,
+  // since those vary per business -- see server/googleLsaSync.ts.
+  googleAdsClientId: process.env.GOOGLE_ADS_CLIENT_ID ?? "",
+  googleAdsClientSecret: process.env.GOOGLE_ADS_CLIENT_SECRET ?? "",
+  googleAdsDeveloperToken: process.env.GOOGLE_ADS_DEVELOPER_TOKEN ?? "",
+  googleAdsLoginCustomerId: process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID ?? "",
+  // Shared secret checked on cron-triggered endpoints (e.g. the LSA sync route)
+  // so they can be safely called by an external scheduler without a user session.
+  cronSecret: process.env.CRON_SECRET ?? "",
   stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
   // ServiceTitan

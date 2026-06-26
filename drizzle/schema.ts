@@ -97,6 +97,10 @@ export const leads = mysqlTable("leads", {
   id: int("id").autoincrement().primaryKey(),
   businessId: int("businessId").notNull(),
   sourceType: mysqlEnum("sourceType", ["yelp", "thumbtack", "google_lsa", "website", "manual"]).default("manual"),
+  // External system's unique ID for this lead (e.g. a Google Ads LocalServicesLead
+  // resource name). Used to dedupe re-synced leads from polling-based integrations.
+  // Null for manually-created/website leads that have no external source.
+  externalId: varchar("externalId", { length: 255 }).unique(),
   customerName: varchar("customerName", { length: 255 }),
   customerEmail: varchar("customerEmail", { length: 320 }),
   customerPhone: varchar("customerPhone", { length: 32 }),
@@ -135,6 +139,10 @@ export const messages = mysqlTable("messages", {
   senderType: mysqlEnum("senderType", ["customer", "ai", "team_member"]).notNull(),
   senderId: int("senderId"),
   content: text("content").notNull(),
+  // External system's unique ID for this message (e.g. a Google Ads
+  // LocalServicesLeadConversation id). Used to avoid re-inserting the same
+  // message on every poll. Null for messages created natively in this app.
+  externalId: varchar("externalId", { length: 255 }).unique(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

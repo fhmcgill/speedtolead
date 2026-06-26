@@ -146,6 +146,13 @@ export async function getLeadById(id: number) {
   return result[0] ?? null;
 }
 
+export async function getLeadByExternalId(externalId: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(leads).where(eq(leads.externalId, externalId)).limit(1);
+  return result[0] ?? null;
+}
+
 export async function updateLead(id: number, data: Partial<InsertLead>) {
   const db = await getDb();
   if (!db) throw new Error("DB not available");
@@ -194,6 +201,13 @@ export async function createMessage(data: InsertMessage) {
   return { id: result[0].insertId };
 }
 
+export async function getMessageByExternalId(externalId: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(messages).where(eq(messages.externalId, externalId)).limit(1);
+  return result[0] ?? null;
+}
+
 export async function getMessagesByConversation(conversationId: number) {
   const db = await getDb();
   if (!db) return [];
@@ -212,6 +226,13 @@ export async function getLeadSourcesByBusiness(businessId: number) {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(leadSources).where(eq(leadSources.businessId, businessId));
+}
+
+export async function getConnectedLeadSourcesByType(sourceType: "yelp" | "thumbtack" | "google_lsa" | "website" | "manual") {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(leadSources)
+    .where(and(eq(leadSources.sourceType, sourceType), eq(leadSources.isConnected, true)));
 }
 
 export async function updateLeadSource(id: number, data: Partial<InsertLeadSource>) {
