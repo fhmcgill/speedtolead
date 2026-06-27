@@ -48,7 +48,6 @@ export default function Home() {
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
-            <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
             <button onClick={() => setLocation("/about")} className="hover:text-foreground transition-colors">About</button>
             <button onClick={() => setLocation("/contact")} className="hover:text-foreground transition-colors">Contact</button>
           </div>
@@ -75,7 +74,6 @@ export default function Home() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-border/40 bg-background px-4 py-4 space-y-3">
             <a href="#features" className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-1" onClick={() => setMobileMenuOpen(false)}>Features</a>
-            <a href="#pricing" className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-1" onClick={() => setMobileMenuOpen(false)}>Pricing</a>
             <button onClick={() => { setLocation("/about"); setMobileMenuOpen(false); }} className="block w-full text-left text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-1">About</button>
             <button onClick={() => { setLocation("/contact"); setMobileMenuOpen(false); }} className="block w-full text-left text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-1">Contact</button>
             <Button onClick={() => (window.location.href = getLoginUrl())} size="sm" className="w-full mt-2">Sign In</Button>
@@ -239,7 +237,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section */}
+      {/* Pricing Section -- intentionally hidden while Thumbtack/Google Ads API
+          applications are pending, so reviewers don't see this as already
+          commercially available. Restore by removing this comment wrapper
+          once ready to go live with pricing again. */}
+      {/*
       <section id="pricing" className="py-24 bg-muted/20">
         <div className="container">
           <div className="text-center max-w-2xl mx-auto mb-16">
@@ -320,6 +322,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      */}
 
       {/* CTA Section */}
       <section className="py-24 bg-gradient-to-br from-primary/5 via-primary/10 to-purple-500/5">
@@ -371,7 +374,6 @@ export default function Home() {
               <button onClick={() => setLocation("/about")} className="hover:text-foreground transition-colors">About</button>
               <button onClick={() => setLocation("/contact")} className="hover:text-foreground transition-colors">Contact</button>
               <a href="#features" className="hover:text-foreground transition-colors">Features</a>
-              <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
               <button onClick={() => setLocation("/privacy")} className="hover:text-foreground transition-colors">Privacy Policy</button>
               <button onClick={() => setLocation("/terms")} className="hover:text-foreground transition-colors">Terms of Use</button>
             </div>
